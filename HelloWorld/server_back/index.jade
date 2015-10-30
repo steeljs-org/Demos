@@ -1,0 +1,11 @@
+- var resPath = 'http://res.test.cn/';
+html
+	head
+		meta(charset='utf-8')
+		title Hello World
+	body
+	script(src="#{resPath}js/lib/lib.js")
+	script(src="#{resPath}js/app.js")
+	script.
+		var ResPath = '#{resPath}';
+		steel.boot('app');
