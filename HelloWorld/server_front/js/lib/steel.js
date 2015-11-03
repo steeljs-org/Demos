@@ -1,3 +1,4 @@
+steel.d("lib/steel", [],function(require, exports, module) {
 /**
  * WebApp
  */
@@ -3017,3 +3018,5 @@ function core_log() {
 }(window);
  
 
+
+});
