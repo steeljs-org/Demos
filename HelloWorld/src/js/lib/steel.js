@@ -2,9 +2,9 @@
  * WebApp
  */
 
-!function(window, undefined) {
+! function(window, undefined) {
 
-   
+ 
 var steel = window.steel || {
     v : 0.1,
     t : now()
@@ -77,20 +77,14 @@ function getElementsByTagName( tagName, el ) {
 function now() {
     return Date.now ? Date.now() : +new Date();
 }
-   
+ 
 
 var config_list = [];
 
-config_push(function(config) {
-    if ('debug' in config) {
-        isDebug = config.debug
-    }
-    mainBox = config.mainBox;
-});
-
 steel.config = function(config) {
+  var parseParamFn = config_parseParamFn(config);
   for (var i = 0, l = config_list.length; i < l; ++i) {
-    config_list[i](config);
+    config_list[i](parseParamFn, config);
   }
 };
 
@@ -98,7 +92,15 @@ function config_push(fn) {
   config_list.push(fn);
 }
 
-   //已定义的模块容器
+function config_parseParamFn(config) {
+  return function(key, defaultValue) {
+    if (key in config) {
+      return config[key];
+    }
+    return defaultValue;
+  };
+}
+ //已定义的模块容器
 var require_defineDeps = {};
 var require_defineConstrutors = {};
 
@@ -133,11 +135,7 @@ function require_idFix(id, basePath) {
 
 function require_nameToPath(name){
     return name.substr(0, name.lastIndexOf('/') + 1);
-}
-
-
-
-/*
+}/*
  * parse URL
  * @method core_parseURL
  * @private
@@ -145,18 +143,18 @@ function require_nameToPath(name){
  * @return {object}
  * @example
  * core_parseURL( 'http://t.sina.com.cn/profile?beijing=huanyingni' ) === 
-    {
-        hash : ''
-        host : 't.sina.com.cn'
-        path : '/profile'
-        port : ''
-        query : 'beijing=huanyingni'
-        protocol : http
-        href : 'http://t.sina.com.cn/profile?beijing=huanyingni'
-    }
+	{
+		hash : ''
+		host : 't.sina.com.cn'
+		path : '/profile'
+		port : ''
+		query : 'beijing=huanyingni'
+		protocol : http
+		href : 'http://t.sina.com.cn/profile?beijing=huanyingni'
+	}
  */
 function core_parseURL( url ) {
-    var parse_url = /^(?:([A-Za-z]+):(\/{0,3}))?([0-9.\-A-Za-z]+\.[0-9A-Za-z]+)?(?::(\d+))?(?:(\/[^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
+	var parse_url = /^(?:([A-Za-z]+):(\/{0,3}))?([0-9.\-A-Za-z]+\.[0-9A-Za-z]+)?(?::(\d+))?(?:(\/[^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
     var names = [ "url", "scheme", "slash", "host", "port", "path", "query", "hash" ];
     var results = parse_url.exec(url);
     var retJson = {};
@@ -168,8 +166,7 @@ function core_parseURL( url ) {
     }
     return retJson;
 }
-
-/*
+/*
  * query to json
  * @method core_queryToJson
  * @private
@@ -180,23 +177,22 @@ function core_parseURL( url ) {
  * core_queryToJson( q1 ) === {'a':1,'b':2,'c':3};
  */
 function core_queryToJson( query ) {
-    
-    var queryList = query.split( '&' );
-    var retJson  = {};
-    
-    for( var i = 0, len = queryList.length; i < len; ++i ){
-        if ( queryList[ i ] ) {
-            var hsh = queryList[ i ].split( '=' );
-            var key = hsh[ 0 ];
-            var value = hsh[ 1 ] || '';
-            retJson[ key ] = retJson[ key ] ? [].concat( retJson[ key ], value ) : value;
-        }
-    }
-    return retJson;
-    
+	
+	var queryList = query.split( '&' );
+	var retJson  = {};
+	
+	for( var i = 0, len = queryList.length; i < len; ++i ){
+		if ( queryList[ i ] ) {
+			var hsh = queryList[ i ].split( '=' );
+			var key = hsh[ 0 ];
+			var value = hsh[ 1 ] || '';
+			retJson[ key ] = retJson[ key ] ? [].concat( retJson[ key ], value ) : value;
+		}
+	}
+	return retJson;
+	
 }
-
-/**
+/**
  * Describe 对url进行解析变化
  * @id  core_URL
  * @alias
@@ -223,12 +219,11 @@ function core_queryToJson( query ) {
  *      setHash('a1', 444444).toString()
  *  );
  */
-
-/*
+/*
  * typeof
  */
 function core_object_typeof( value ) {
-    return value === null ? '' : Object.prototype.toString.call( value ).slice( 8, -1 ).toLowerCase();
+	return value === null ? '' : Object.prototype.toString.call( value ).slice( 8, -1 ).toLowerCase();
 }
 
 /*
@@ -239,22 +234,21 @@ function core_object_typeof( value ) {
  * @return {string} query
  */
 function core_jsonToQuery( json ) {
-    
-    var queryString = [];
-    for ( var k in json ) {
-        if ( core_object_typeof( json[ k ] ) === 'array' ) {
-            for ( var i = 0, len = json[ k ].length; i < len; ++i ) {
-                queryString.push( k + '=' + json[ k ][ i ] );
-            }
-        } else {
-            queryString.push( k + '=' + json[ k ] );
-        }
-    }
-    return queryString.join( '&' );
-    
+	
+	var queryString = [];
+	for ( var k in json ) {
+		if ( core_object_typeof( json[ k ] ) === 'array' ) {
+			for ( var i = 0, len = json[ k ].length; i < len; ++i ) {
+				queryString.push( k + '=' + json[ k ][ i ] );
+			}
+		} else {
+			queryString.push( k + '=' + json[ k ] );
+		}
+	}
+	return queryString.join( '&' );
+	
 }
-
-/*
+/*
  * 合并参数，不影响源
  * @param {Object} oSource 需要被赋值参数的对象
  * @param {Object} oParams 传入的参数对象 
@@ -276,8 +270,7 @@ function core_object_parseParam(oSource, oParams, isown){
         }
     }
     return obj;
-}
-
+}
 
 function core_URL(sURL,args){
     var opts = core_object_parseParam({
@@ -379,8 +372,7 @@ function core_URL(sURL,args){
     return retJson;
 };
 
-
-/**
+/**
  * 资源变量
  */
 var resource_jsPath;
@@ -393,15 +385,13 @@ var resource_define_apiRule;
 var resource_queue_list = {};
 
 //加载完成的资源列表
-var resource_cache_list = {};
-/*
+var resource_cache_list = {};/*
  * 根据相对路径得到绝对路径
  * @method core_fixUrl
  * @private
  * @return {String}
  */
-
-
+
 
 function core_fixUrl(baseUrl, path) {
     var baseUrlJson = core_parseURL(baseUrl);
@@ -519,8 +509,7 @@ function resource_fixUrl_directlink(url) {
     var a = resource_fixUrl_a || core_dom_createElement('a');
     a.href = url;
     return a.href;
-}*/
-/** 
+}*//** 
  * 资源队列管理
  * @params
  * url 请求资源地址
@@ -539,7 +528,7 @@ function resource_queue_push(url, succ, err){
 }
 
 function resource_queue_run(url, access, data){
-    access = access ? 0 : 1;
+	access = access ? 0 : 1;
     for(var i = 0, len = resource_queue_list[url].length; i < len; i++) {
         resource_queue_list[url][i][access](data, url);
     }
@@ -547,8 +536,7 @@ function resource_queue_run(url, access, data){
 
 function resource_queue_del(url) {
     url in resource_queue_list && (delete resource_queue_list[url]);
-}
-
+}
 
 /*
  * 缓存管理
@@ -561,36 +549,33 @@ function resource_queue_del(url) {
  */
 
 function resource_cache_create(url) {
-    resource_cache_list[url] = [];
+	resource_cache_list[url] = [];
 }
 
 function resource_cache_set(url, obj) {
-    resource_cache_list[url].data = obj.data;
-    resource_cache_list[url].expire = obj.expire;
+	resource_cache_list[url].data = obj.data;
+	resource_cache_list[url].expire = obj.expire;
 }
 
 function resource_cache_get(url) {
-    return resource_cache_list[url];
+	return resource_cache_list[url];
 }
 
 function resource_cache_del(url) {
-    if (url in resource_cache_list[url]) {
-        delete resource_cache_list[url];
-    }
-}
-/*版本号*/
-var loader_base_version;
-/*
+	if (url in resource_cache_list[url]) {
+		delete resource_cache_list[url];
+	}
+}/*版本号*/
+var loader_base_version;/*
  * 创建节点
  * @method core_dom_createElement
  * @private
  * @param {string} tagName
  */
 function core_dom_createElement( tagName ) {
-    return document.createElement( tagName );
+	return document.createElement( tagName );
 }
-
-var core_uniqueKey_index = 1;
+var core_uniqueKey_index = 1;
 var core_uniqueKey_prefix = 'SL_' + now();
 
 /*
@@ -600,10 +585,9 @@ var core_uniqueKey_prefix = 'SL_' + now();
  * @return {string}
  */
 function core_uniqueKey() {
-    return core_uniqueKey_prefix + core_uniqueKey_index++;
+	return core_uniqueKey_prefix + core_uniqueKey_index++;
 }
-
-/*
+/*
  * 返回指定ID或者DOM的节点句柄
  * @method core_dom_removeNode
  * @private
@@ -612,10 +596,9 @@ function core_uniqueKey() {
  * core_dom_removeNode( node );
  */
 function core_dom_removeNode( node ) {
-    node && node.parentNode.removeChild( node );
+	node && node.parentNode.removeChild( node );
 }
-
-
+
 
 function loader_js(url, callback){
     var entityList = {};
@@ -695,10 +678,7 @@ function loader_js(url, callback){
     }
     return js;
 }
-
-
-
-/*
+/*
  * 给节点设置属性
  * @method core_dom_setAttribute
  * @private
@@ -706,10 +686,8 @@ function loader_js(url, callback){
  * @param {string} value
  */
 function core_dom_setAttribute( el, name, value ) {
-    return el.setAttribute( name, value );
-}
-
-
+	return el.setAttribute( name, value );
+}
 
 var core_hideDiv_hideDiv;
 /*
@@ -719,11 +697,11 @@ var core_hideDiv_hideDiv;
  * @param {Element} el 节点
  */
 function core_hideDiv_appendChild( el ) {
-    if ( !core_hideDiv_hideDiv ) {
-        ( core_hideDiv_hideDiv = core_dom_createElement( 'div' ) ).style.cssText = 'position:absolute;top:-9999px;';
-        head.appendChild( core_hideDiv_hideDiv );
-    }
-    core_hideDiv_hideDiv.appendChild( el );
+	if ( !core_hideDiv_hideDiv ) {
+		( core_hideDiv_hideDiv = core_dom_createElement( 'div' ) ).style.cssText = 'position:absolute;top:-9999px;';
+		head.appendChild( core_hideDiv_hideDiv );
+	}
+	core_hideDiv_hideDiv.appendChild( el );
 }
 
 /*
@@ -733,10 +711,9 @@ function core_hideDiv_appendChild( el ) {
  * @param {Element} el 节点
  */
 function core_hideDiv_removeChild( el ) {
-    core_hideDiv_hideDiv && core_hideDiv_hideDiv.removeChild( el );
+	core_hideDiv_hideDiv && core_hideDiv_hideDiv.removeChild( el );
 }
-
-
+
 
 function loader_css( url, callback, load_ID ){
     var link = core_dom_createElement('link');
@@ -778,9 +755,7 @@ function loader_css( url, callback, load_ID ){
         }
     };
     setTimeout(timer, 50);
-}
-
-/**
+}/**
  * make an ajax request
  * @alias loader_ajax
  * @param {Object}  {
@@ -804,10 +779,7 @@ function loader_css( url, callback, load_ID ){
     'args':{'id':123,'test':'true'},
     });
  */
-
-
-
-
+
 
 function loader_ajax(url, onComplete){//(url, callback)
     var opts = {
@@ -1043,25 +1015,24 @@ function require_global(deps, cb, errcb, curNs){
             }
         }
     }
-}
-/*
+}/*
  * 把类数组改变成数组
  * @method core_array_makeArray
  * @private
  * @param {arrayLike} obj
- *  需要查找的对象
+ *	需要查找的对象
  * @return {Array} 
  */
 function core_array_makeArray( obj ) {
-    try {
-        return [].slice.call(obj);
-    } catch (e) { //for IE
-        var j, i = 0, rs = [];
-        while ( j = obj[i] ){
-            rs[i++] = j;
-        }
-        return rs;
-    }
+	try {
+		return [].slice.call(obj);
+	} catch (e) { //for IE
+		var j, i = 0, rs = [];
+		while ( j = obj[i] ){
+			rs[i++] = j;
+		}
+		return rs;
+	}
 }
 
 //内部同步调用require方法
@@ -1168,16 +1139,12 @@ function require_define(ns, deps, construtor) {
             // }
         }
     }
-}
-
-
-
+}
 
 //定义boot
 function require_boot(ns) {
     require_runner([ns]);
-}
-
+}
 
 //调用入口的获取
 function require_dataMain(){
@@ -1185,38 +1152,28 @@ function require_dataMain(){
     var lastScripts = scripts[scripts.length -1];
     require_dataMainId = lastScripts && lastScripts.getAttribute('data-main') || require_dataMainId;
 }
-   
+ 
 
-
-function loader_config(config) {
-    loader_base_version = config.version;
+function loader_config(parseParamFn) {
+  loader_base_version = parseParamFn('version', loader_base_version);
 }
 
-config_push(loader_config);
-
-
-
-//暂不做
-   
-
-
+config_push(loader_config);//暂不做
+ 
 
 var resource_config_slash = '/';
-function resource_config(config) {
-    resource_jsPath = config.jsPath;
-    resource_cssPath = config.cssPath;
-    resource_ajaxPath = config.ajaxPath || resource_config_slash;
-    resource_basePath = config.basePath || resource_config_slash;
-    resource_define_apiRule = config.defApiRule;
+function resource_config(parseParamFn) {
+    resource_jsPath = parseParamFn('jsPath', resource_jsPath);
+    resource_cssPath = parseParamFn('cssPath', resource_cssPath);
+    resource_ajaxPath = parseParamFn('ajaxPath', resource_ajaxPath);
+    resource_basePath = parseParamFn('basePath', resource_config_slash);
+    resource_define_apiRule = parseParamFn('defApiRule', resource_define_apiRule);
 }
 
-config_push(resource_config);
-
-   /**
+config_push(resource_config);
+ /**
  * 公共对象方法定义文件
- */
-
-
+ */
 
 //control容器
 var render_base_controlCache = {};
@@ -1231,10 +1188,7 @@ var render_base_count = 0;
 function render_base_idMaker(){
     return core_uniqueKey();
 }
-
-
-
-
+
 //污染到对象上的属性定义
 var core_uniqueID_attr = '__SL_ID';
 /*
@@ -1244,29 +1198,28 @@ var core_uniqueID_attr = '__SL_ID';
  * @return {string}
  */
 function core_uniqueID( obj ) {
-    return obj[ core_uniqueID_attr ] || ( obj[ core_uniqueID_attr ] = core_uniqueKey() );
+	return obj[ core_uniqueID_attr ] || ( obj[ core_uniqueID_attr ] = core_uniqueKey() );
 }
-
-/*
+/*
  * 返回在数组中的索引
  * @method core_array_indexOf
  * @private
  * @param {Array} oElement 
  * @param {Any} oElement 
- *  需要查找的对象
+ *	需要查找的对象
  * @return {Number} 
- *  在数组中的索引,-1为未找到
+ *	在数组中的索引,-1为未找到
  */
 function core_array_indexOf( oElement, aSource ) {
-    if ( aSource.indexOf ) {
-        return aSource.indexOf( oElement );
-    }
-    for ( var i = 0, len = aSource.length; i < len; ++i ) {
-        if ( aSource[ i ] === oElement ) {
-            return i;
-        }
-    }
-    return -1;
+	if ( aSource.indexOf ) {
+		return aSource.indexOf( oElement );
+	}
+	for ( var i = 0, len = aSource.length; i < len; ++i ) {
+		if ( aSource[ i ] === oElement ) {
+			return i;
+		}
+	}
+	return -1;
 }
 
 
@@ -1278,7 +1231,7 @@ var core_notice_data = steel[ core_notice_data_SLKey ] = steel[ core_notice_data
  * @method core_notice_find
  */
 function core_notice_find( type ) {
-    return core_notice_data[ type ] || ( core_notice_data[ type ] = [] );
+	return core_notice_data[ type ] || ( core_notice_data[ type ] = [] );
 }
 
 /*
@@ -1288,7 +1241,7 @@ function core_notice_find( type ) {
  * @param {Function} fn
  */
 function core_notice_on( type, fn ) {
-    core_notice_find( type ).unshift( fn );
+	core_notice_find( type ).unshift( fn );
 }
 
 /*
@@ -1298,18 +1251,18 @@ function core_notice_on( type, fn ) {
  * @param {Function} fn
  */
 function core_notice_off( type, fn ) {
-    var typeArray = core_notice_find( type ),
-        index,
-        spliceLength;
-    if ( fn ) {
-        if ( ( index = core_array_indexOf( fn, typeArray ) ) > -1 ) {
-            spliceLength = 1;
-        }
-    } else {
-        index = 0;
-        spliceLength = typeArray.length;
-    }
-    spliceLength && typeArray.splice( index, spliceLength );
+	var typeArray = core_notice_find( type ),
+		index,
+		spliceLength;
+	if ( fn ) {
+		if ( ( index = core_array_indexOf( fn, typeArray ) ) > -1 ) {
+			spliceLength = 1;
+		}
+	} else {
+		index = 0;
+		spliceLength = typeArray.length;
+	}
+	spliceLength && typeArray.splice( index, spliceLength );
 }
 
 /*
@@ -1319,31 +1272,25 @@ function core_notice_off( type, fn ) {
  * @param {Array} args
  */
 function core_notice_fire( type, args ) {
-    var typeArray = core_notice_find( type );
-    args = [].concat( args || [] );
-    for ( var i = typeArray.length - 1; i > -1; i-- ) {
-        try {
-            typeArray[ i ] && typeArray[ i ].apply( undefined, args );
-        } catch ( e ) {
-            type != logNotice && core_notice_fire( logNotice, ['[error][notice][' + type + ']', e] );
-        }
-    }
+	var typeArray = core_notice_find( type );
+	args = [].concat( args || [] );
+	for ( var i = typeArray.length - 1; i > -1; i-- ) {
+		try {
+			typeArray[ i ] && typeArray[ i ].apply( undefined, args );
+		} catch ( e ) {
+			type != logNotice && core_notice_fire( logNotice, ['[error][notice][' + type + ']', e] );
+		}
+	}
 }
-
-
+
 
 
 function render_error() {
-    log(arguments);
+	log(arguments);
     core_notice_fire('renderError', core_array_makeArray(arguments));
-}
-/*
+}/*
  * control核心逻辑
-*/
-
-
-
-/*
+*//*
  * 给节点设置属性
  * @method core_dom_getAttribute
  * @private
@@ -1352,36 +1299,32 @@ function render_error() {
  */
 function core_dom_getAttribute( el, name ) {
     return el.getAttribute( name );
-}
-
+}
 /*
  * 对象克隆
  * @method core_object_clone
  */
 function core_object_clone( obj ) {
-    
-    var ret = obj;
-    
-    if ( core_object_typeof( obj ) === 'array' ) {
-        ret = [];
-        var i = obj.length;
-        while ( i-- ) {
-            ret[ i ] = core_object_clone( obj[ i ] );
-        }
-    } else if ( core_object_typeof( obj ) === 'object' ) {
-        ret = {};
-        for ( var k in obj ) {
-            ret[ k ] = core_object_clone( obj[ k ] );
-        }
-    }
-    
-    return ret;
-    
+	
+	var ret = obj;
+	
+	if ( core_object_typeof( obj ) === 'array' ) {
+		ret = [];
+		var i = obj.length;
+		while ( i-- ) {
+			ret[ i ] = core_object_clone( obj[ i ] );
+		}
+	} else if ( core_object_typeof( obj ) === 'object' ) {
+		ret = {};
+		for ( var k in obj ) {
+			ret[ k ] = core_object_clone( obj[ k ] );
+		}
+	}
+	
+	return ret;
+	
 }
-
-
-
-
+
 
 function render_control_setChildren(resContainer) {
     var children = resContainer.children || {};
@@ -1418,9 +1361,7 @@ function render_control_destroyChildren(childrenid) {
         }
     }
     
-}
-
-/**
+}/**
  * @param {Object} o
  * @param {boolean} isprototype 继承的属性是否也在检查之列
  * @example
@@ -1434,14 +1375,7 @@ function core_obj_isEmpty(o,isprototype){
         }
     }
     return true;
-}
-
-
-
-
-
-
-
+}
 
 function core_array_inArray(oElement, aSource){
     return core_array_indexOf(oElement, aSource) > -1;
@@ -1468,12 +1402,9 @@ function render_parse(jadeFunStr){
     }
     // console.log(result);
     return result;
-}
-/*
+}/*
  * 处理子模块
-*/
-
-
+*/
 
 function render_control_handleChild(boxId, tplParseResult) {
     var resContainer = render_base_resContainer[boxId];
@@ -1513,12 +1444,7 @@ function render_control_handleChild(boxId, tplParseResult) {
             render_run(s_id, s_controller);//渲染提前
         }
     }
-}
-
-
-
-
-
+}
 
 function render_control_setLogic(resContainer) {
     var controllerNs = resContainer.controllerNs;
@@ -1598,10 +1524,7 @@ function render_control_destroyLogic(resContainer) {
         }
       resContainer.logicResult = undefined;
     }
-}
-
-
-
+}
 
 //用户扩展类
 function render_control_setExtTplData_F() {}
@@ -1684,8 +1607,7 @@ function render_control_render(resContainer) {
             render_control_render_childWaitingCache[parentId].push(render_control_render);
         }
     }
-}
-
+}
 
 var render_control_setCss_cssPrefix = 'S_CSS_';
 var render_control_setCss_cssCache = {};//css容器
@@ -1748,15 +1670,7 @@ function render_control_destroyCss(resContainer) {
 
 function render_control_getLinkId(path) {
     return path && render_control_setCss_cssPrefix + path.replace(/(\.css)$/i, '').replace(/\//g, '_');
-}
-
-
-
-
-
-
-
-
+}
 
 function render_control_setTpl(resContainer) {
     var controllerNs = resContainer.controllerNs;
@@ -1793,12 +1707,7 @@ function render_control_setTpl(resContainer) {
 function render_control_setTpl_toRender(resContainer) {
     resContainer.tplReady = true;
     render_control_render(resContainer);
-}
-
-
-
-
-//http://www.sharejs.com/codes/javascript/1985
+}//http://www.sharejs.com/codes/javascript/1985
 function core_object_equals(x, y){
     // If both x and y are null or undefined and exactly the same
     if ( x === y ) {
@@ -1849,9 +1758,7 @@ function core_object_equals(x, y){
     }
     return true;
 };
-
-
-
+
 
 function render_contorl_toTiggerChildren(resContainer) {
     if (resContainer.needToTriggerChildren) {
@@ -1873,8 +1780,7 @@ function render_contorl_toTiggerChildren(resContainer) {
         }
     }
     resContainer.needToTriggerChildren = false;
-}
-
+}
 
 function render_control_setData(resContainer) {
     
@@ -1929,10 +1835,7 @@ function render_control_setData_toRender(data, resContainer) {
     } else {
         render_contorl_toTiggerChildren(resContainer);
     }
-}
-
-
-
+}
 
 //检查资源是否改变
 function render_control_checkResChanged(resContainer, type, value) {
@@ -2121,8 +2024,7 @@ function render_control_main(boxId, controllerNs) {
             resContainer.childrenChanged && render_control_setChildren(resContainer);
         });
     }
-}
-/**
+}/**
  * querySelectorAll
  * 在非h5下目前只支持标签名和属性选择如div[id=fsd],属性值不支持通配符
  */
@@ -2130,38 +2032,37 @@ function render_control_main(boxId, controllerNs) {
 var core_dom_querySelectorAll_REG1 = /([^\[]*)(?:\[([^\]=]*)=?['"]?([^\]]*?)['"]?\])?/;
 
 function core_dom_querySelectorAll(dom, select) {
-    var result;
-    var matchResult;
-    var matchTag;
-    var matchAttrName;
-    var matchAttrValue;
-    var elements;
-    var elementAttrValue;
-    if (dom.querySelectorAll) {
-        result = dom.querySelectorAll(select);
-    } else {
-        if (matchResult = select.match(core_dom_querySelectorAll_REG1)) {
-            matchTag = matchResult[1];
-            matchAttrName = matchResult[2];
-            matchAttrValue = matchResult[3];
-            result = getElementsByTagName(matchTag || '*', dom);
-            if (matchAttrName) {
-                elements = result;
-                result = [];
-                for (var i = 0, l = elements.length; i < l; ++i) {
-                    elementAttrValue = elements[i].getAttribute(matchAttrName);
-                    if (elementAttrValue !== null && (!matchAttrValue || elementAttrValue === matchAttrValue)) {
-                        result.push(elements[i])
-                    }
-                }
-            }
-        }
-    }
-    return result || [];
+	var result;
+	var matchResult;
+	var matchTag;
+	var matchAttrName;
+	var matchAttrValue;
+	var elements;
+	var elementAttrValue;
+	if (dom.querySelectorAll) {
+		result = dom.querySelectorAll(select);
+	} else {
+		if (matchResult = select.match(core_dom_querySelectorAll_REG1)) {
+			matchTag = matchResult[1];
+			matchAttrName = matchResult[2];
+			matchAttrValue = matchResult[3];
+			result = getElementsByTagName(matchTag || '*', dom);
+			if (matchAttrName) {
+				elements = result;
+				result = [];
+				for (var i = 0, l = elements.length; i < l; ++i) {
+					elementAttrValue = elements[i].getAttribute(matchAttrName);
+					if (elementAttrValue !== null && (!matchAttrValue || elementAttrValue === matchAttrValue)) {
+						result.push(elements[i])
+					}
+				}
+			}
+		}
+	}
+	return result || [];
 }
 
-
-
+
 
 var render_run_controllerLoadFn = {};
 var render_run_rootScope = {};
@@ -2232,7 +2133,7 @@ function render_run(box, controller) {
         controller(control, render_run_rootScope);
     }
 }
-   /**
+ /**
  * 路由变量定义区
  *
  */
@@ -2252,26 +2153,17 @@ var router_base_singlePage = true;
 var router_base_params = {
     params:{}, 
     query:{}
-};
-/**
+};/**
  * 路由配置
- */
-
-
+ */
 
 config_push(router_config);
 
-function router_config(config) {
-    if (config.router) {
-        router_base_routerTable = config.router;
-        router_base_useHash = config.useHash || router_base_useHash;
-        router_base_singlePage = (config.singlePage !== router_base_singlePage ? config.singlePage : router_base_singlePage);
-    }
-}
-
-
-
-/**
+function router_config(parseParamFn, config) {
+  router_base_routerTable = parseParamFn('router', router_base_routerTable);
+  router_base_useHash = parseParamFn('useHash', router_base_useHash);
+  router_base_singlePage = parseParamFn('singlePage', router_base_singlePage);
+}/**
  * router.getPath
  * 获取当前路由path，支持H5的history和非H5的hash两种方式
  * @return path String
@@ -2280,9 +2172,7 @@ function router_config(config) {
  * @example
  *      var path = router_getPath();
  */
-
-
-
+
 /**
  * @id core_object_merge
  * @param {Object} origin
@@ -2365,9 +2255,7 @@ function core_object_merge(origin, cover, opts) {
     }, opts);
     
     return core_object_mergeBase(origin, cover, conf.isDeep);
-};
-
-
+};
 
 var router_getPath_hasStrip = /^#*/;
 
@@ -2450,11 +2338,9 @@ function router_match_decodeParam(val) {
 /*
 //最后一个不区分大小写 例如"/v1/public/h5/custommenu/main" 与 "/v1/public/h5/custommenu/mAiN"
 function router_match_urlFix(url) {
-    var res = url.slice(url.lastIndexOf('/') + 1);
-    return url.replace(res, res.toLowerCase());
-}*/
-
-/*
+	var res = url.slice(url.lastIndexOf('/') + 1);
+	return url.replace(res, res.toLowerCase());
+}*//*
  * dom事件绑定
  * @method core_event_addEventListener
  * @private
@@ -2463,13 +2349,13 @@ function router_match_urlFix(url) {
  * @param {string} fn
  */
 var core_event_addEventListener = isAddEventListener ? 
-    function( el, type, fn ) {
-        el.addEventListener( type, fn, false );
-    }
-    :
-    function( el, type, fn ) {
-        el.attachEvent( 'on' + type, fn );
-    };
+	function( el, type, fn ) {
+		el.addEventListener( type, fn, false );
+	}
+	:
+	function( el, type, fn ) {
+		el.attachEvent( 'on' + type, fn );
+	};
 
 /*
  * dom ready
@@ -2478,62 +2364,56 @@ var core_event_addEventListener = isAddEventListener ?
  * @param {Function} handler
  */
 function core_dom_ready( handler ) {
-    
-    function DOMReady() {
-        if ( DOMReady !== emptyFunction ) {
-            DOMReady = emptyFunction;
-            handler();
-        }
-    }
-    
-    if ( /complete/.test( document.readyState ) ) {
-        handler();
-    } else {
-        if ( isAddEventListener ) {
-            core_event_addEventListener( document, 'DOMContentLoaded', DOMReady );
-        } else {
-            core_event_addEventListener( document, 'onreadystatechange', DOMReady );
+	
+	function DOMReady() {
+		if ( DOMReady !== emptyFunction ) {
+			DOMReady = emptyFunction;
+			handler();
+		}
+	}
+	
+	if ( /complete/.test( document.readyState ) ) {
+		handler();
+	} else {
+		if ( isAddEventListener ) {
+			core_event_addEventListener( document, 'DOMContentLoaded', DOMReady );
+		} else {
+			core_event_addEventListener( document, 'onreadystatechange', DOMReady );
 
-            //在跨域嵌套iframe时 IE8- 浏览器获取window.frameElement 会出现权限问题
-            try {
-                var _frameElement = window.frameElement;
-            } catch (e) {}
+			//在跨域嵌套iframe时 IE8- 浏览器获取window.frameElement 会出现权限问题
+			try {
+				var _frameElement = window.frameElement;
+			} catch (e) {}
 
-            if ( _frameElement == null && docElem.doScroll ) {
-                (function doScrollCheck() {
-                    try {
-                        docElem.doScroll( 'left' );
-                    } catch ( e ) {
-                        return setTimeout( doScrollCheck, 25 );
-                    }
-                    DOMReady();
-                })();
-            }
-        }
-        core_event_addEventListener( window, 'load', DOMReady );
-    }
-    
+			if ( _frameElement == null && docElem.doScroll ) {
+				(function doScrollCheck() {
+					try {
+						docElem.doScroll( 'left' );
+					} catch ( e ) {
+						return setTimeout( doScrollCheck, 25 );
+					}
+					DOMReady();
+				})();
+			}
+		}
+		core_event_addEventListener( window, 'load', DOMReady );
+	}
+	
 }
-
-
-/*
+/*
  * preventDefault
  * @method core_event_preventDefault
  * @private
  * @return {Event} e 
  */
 function core_event_preventDefault( event ) {
-    if ( event.preventDefault ) {
-        event.preventDefault();
-    } else {
-        event.returnValue = false;
-    }
+	if ( event.preventDefault ) {
+		event.preventDefault();
+	} else {
+		event.returnValue = false;
+	}
 }
-
-
-
-
-
+
 
 var router_listen_queryTime = 3;
 var router_listen_count;
@@ -2653,11 +2533,11 @@ function router_listen_setRouter(url) {
     if (!url) {
         location.reload();
     } else {// && history.length === 1
-        if (!urlmatch || (android && history.length === 1)) {
-            location.href = url;
-            return;
-        }
-        router_listen_pushState(url, urlmatch);
+		if (!urlmatch || (android && history.length === 1)) {
+			location.href = url;
+			return;
+		}
+		router_listen_pushState(url, urlmatch);
     }
 }
 
@@ -2670,17 +2550,13 @@ function router_listen_getFixUrl(url) {
         }
     }
     return url;
-}
-/**
+}/**
  * 路由启动接口
  * 1、设置侦听
  * 2、主动响应第一次的url(第一次是由后端渲染的，如果没有真实文件，无法启动页面)
  *
  */
-
-
-
-/**
+/**
  * router.use
  * 设置单条路由规则
  * 路由语法说明：
@@ -2688,14 +2564,11 @@ function router_listen_getFixUrl(url) {
  * 2、支持query和hash
  * 3、低版浏览器支持用hash模式来设置路由
  */
-
-
-/**
+/**
  * Turn an Express-style path string such as /user/:name into a regular expression.
  *
  */
-
-/**
+/**
  * 判断对象是否为数组
  * @param {Array} o
  * @return {Boolean}
@@ -2704,12 +2577,11 @@ function router_listen_getFixUrl(url) {
  * var bl2 = core_array_isArray(li1);
  * bl2 === TRUE
  */
-
-
+
 var core_array_isArray = Array.isArray ? function(arr) {
-    return Array.isArray(arr);
+	return Array.isArray(arr);
 } : function(arr){
-    return 'array' === core_object_typeof(arr);
+	return 'array' === core_object_typeof(arr);
 };
 
 
@@ -2945,11 +2817,8 @@ function router_boot(){
     }
     router_listen();
 }
-
-//router资源
-
-
-
+//router资源
+
 
 var router_api = {
     set: router_listen_setRouter,
@@ -2959,61 +2828,63 @@ var router_api = {
 function router_get() {
     return router_base_params;
 }
-   
-   /**
+ 
+ /**
  * 日志
- */
-
+ */
 
 function core_log() {
-    var console = window.console;
-    if (!isDebug || !console) {
-        return;
-    }
-    var evalString = [];
-    for (var i = 0, l = arguments.length; i < l; ++i) {
-        evalString.push('arguments[' + i + ']');
-    }
-    new Function('console.log(' + evalString.join(',') + ')').apply(this, arguments);
+	var console = window.console;
+	if (!isDebug || !console) {
+		return;
+	}
+	var evalString = [];
+	for (var i = 0, l = arguments.length; i < l; ++i) {
+		evalString.push('arguments[' + i + ']');
+	}
+	new Function('console.log(' + evalString.join(',') + ')').apply(this, arguments);
 }
-    //初始化data-main
-    
-    require_dataMain();
-    steel.d = require_define; 
-    steel.res = resource_res;
-    steel.run =  render_run;
-    steel.router = router_api;
-    steel.setRouter = steel.router.set;
-    steel.on = core_notice_on;
-    steel.setExtTplData = render_control_setExtTplData;
-    
-    steel.boot = function(ns) {
-        steel.isDebug = isDebug;
-        setTimeout(function() {
-            require_boot(ns);
-            router_boot();
-            if (mainBox) {
-                var controller = router_match(location.toString());
-                if (controller !== false) {
-                    render_run(mainBox, controller);
-                    core_notice_fire('stageChange', mainBox);
-                }
-            }
-        });
-    };
 
-    steel._destroyByNode = function(node) {
-        var id = node && node.id;
-        var resContainer;
-        if (id && (resContainer = render_base_resContainer[id])) {
-            render_control_destroyLogic(resContainer);
-            render_control_destroyChildren(resContainer.toDestroyChildrenid);
+  config_push(function(parseParamFn) {
+    isDebug = parseParamFn('debug', isDebug);
+    mainBox = parseParamFn('mainBox', mainBox);
+  });
+
+  //初始化data-main
+  require_dataMain();
+  steel.d = require_define;
+  steel.res = resource_res;
+  steel.run = render_run;
+  steel.router = router_api;
+  steel.setRouter = steel.router.set;
+  steel.on = core_notice_on;
+  steel.setExtTplData = render_control_setExtTplData;
+
+  steel.boot = function(ns) {
+    steel.isDebug = isDebug;
+    setTimeout(function() {
+      require_boot(ns);
+      router_boot();
+      if (mainBox) {
+        var controller = router_match(location.toString());
+        if (controller !== false) {
+          render_run(mainBox, controller);
+          core_notice_fire('stageChange', mainBox);
         }
-    };
+      }
+    });
+  };
 
-    window.steel = steel;
+  steel._destroyByNode = function(node) {
+    var id = node && node.id;
+    var resContainer;
+    if (id && (resContainer = render_base_resContainer[id])) {
+      render_control_destroyLogic(resContainer);
+      render_control_destroyChildren(resContainer.toDestroyChildrenid);
+    }
+  };
+
+  window.steel = steel;
 
 
 }(window);
- 
-
