@@ -1,6 +1,8 @@
 /**
  * 应用入口文件
  */
+require('components/index/ctrl');
+require('components/test/ctrl');
 
 steel.config({
 	basePath: ResPath,

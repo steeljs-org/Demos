@@ -1,6 +1,7 @@
 /**
  * 模块控制器
  */
+require('./tpl');
 
 module.exports = function(control) {
 	control.set({
