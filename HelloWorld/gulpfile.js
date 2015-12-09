@@ -123,17 +123,8 @@ function dealJs(isDebug) {
     if (isDebug) {
         debugConfig = '';
     }
-    return merge2(
-		merge2(
-			gulp.src(['src/js/lib/steel.js', 'src/js/lib/zepto.js', 'src/js/lib/pc_tab_fix.js', 'src/js/lib/caculaterem.js', debugConfig], {
-				base: 'src/js/'
-			}).pipe($.concat('lib/lib.js')),
-			gulp.src(['src/js/lib/steel.js', 'src/js/lib/theia.js', debugConfig], {
-				base: 'src/js/'
-			}).pipe($.concat('lib/lib_pc.js'))
-		),
 
-        merge2(
+    var wrapJs = merge2(
             gulp.src(['src/js/**/*.jade'])
             .pipe($.jade({
                 client: true,
@@ -142,8 +133,20 @@ function dealJs(isDebug) {
             .pipe($.steelJadefnWrapCommonjs()),
 
             gulp.src(['src/js/**/*.js'])
-        ).pipe($.steelWrapAmd())
-        .pipe($.steelAmdConcat())
+        ).pipe($.steelWrapAmd());
+    if (!isDebug) {
+        wrapJs = wrapJs.pipe($.steelAmdConcat());
+    }
+    return merge2(
+		merge2(
+			gulp.src(['src/js/lib/steel.js', 'src/js/lib/**/*.js', debugConfig], {
+				base: 'src/js/'
+			}).pipe($.concat('lib/lib.js')),
+			gulp.src(['src/js/lib/steel.js', 'src/js/lib/theia.js', debugConfig], {
+				base: 'src/js/'
+			}).pipe($.concat('lib/lib_pc.js'))
+		),
+        wrapJs
     );
 }
 

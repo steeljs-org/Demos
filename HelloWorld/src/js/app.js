@@ -12,7 +12,7 @@ steel.config({
         ['/index', 'components/index/ctrl'],
         ['/test', 'components/test/ctrl'],
     ],
-    routerOption:{
+    routerOption: {
         useHash:false,
         queryTime: 3
     }

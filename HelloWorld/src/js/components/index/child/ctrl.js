@@ -4,7 +4,7 @@
 
 module.exports = function(control) {
     control.set({
-        data: '/aj/index',
+        data: '/aj/index_child',
         tpl: './tpl',
         logic: './logic'
     });
