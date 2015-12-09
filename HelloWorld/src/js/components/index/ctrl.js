@@ -6,6 +6,7 @@ module.exports = function(control) {
 	control.set({
 		data: '/aj/index',
 		tpl: './tpl',
-		logic: './logic'
+		logic: './logic',
+        css: './style'
 	});
 };

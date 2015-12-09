@@ -81,7 +81,11 @@ function deal_html() {
 
 function dealCss(isDebug) {
     if (isDebug) {
-        gulp.src(['src/css/**/*.*']).pipe(gulp.dest(front_base + '/css/'));
+        gulp.src(['src/css/**/*.*'])
+            .pipe($.steelCssPostfix({ 
+                 filter: cssPostfix_filter
+            }))
+            .pipe(gulp.dest(front_base + '/css/'));
     } else {
         gulp.src(['src/css/**/*.*'])
             .pipe($.steelCssPostfix({ 
