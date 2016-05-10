@@ -1,2 +1,15 @@
-node_modules
 server_front
+
+#system
+.DS_Store
+
+#webstorm
+.idea
+
+#sublime
+sftp-config.json
+
+#node
+node_modules
+
+.svn
