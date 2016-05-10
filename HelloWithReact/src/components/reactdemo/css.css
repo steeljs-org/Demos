@@ -1,0 +1,26 @@
+body,html{
+    height:100%;
+    color: #fff;
+    text-align: center;
+}
+.main{
+    background:-webkit-gradient(linear, 0 0, 0 100%, from(rgb(191, 114, 156)), to(rgb(191, 114, 156)));
+    height:100%;
+}
+.main h1{
+    padding-top:2rem;
+    font-size:1.5rem;
+    height: 1.5rem;
+}
+.main h1:before,.main h1:after{
+    content:'---';
+}
+.main div{
+    padding:5rem 1rem;
+    font-size:1rem;
+}
+.content{
+    height:5rem;
+    text-align: center;
+    background:-webkit-gradient(linear, 0 0, 0 100%, from(#2074af), to(#2c91d2));
+}
